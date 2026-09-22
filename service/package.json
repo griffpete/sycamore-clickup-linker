@@ -1,0 +1,21 @@
+{
+  "name": "clickup-hubspot-sync-service",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.6"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch-path=src src/server.js",
+    "find-list": "node scripts/find-list.js",
+    "setup:hubspot": "node scripts/setup-hubspot.js",
+    "cleanup:dry-run": "node scripts/cleanup-old-sync.js",
+    "cleanup": "node scripts/cleanup-old-sync.js --confirm"
+  },
+  "dependencies": {
+    "@hubspot/api-client": "^14.0.1",
+    "express": "^5.2.1"
+  }
+}

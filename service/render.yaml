@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: clickup-bug-linker
+    runtime: node
+    plan: starter
+    rootDir: service
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.11.0
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: HUBSPOT_CLIENT_SECRET
+        sync: false
+      - key: HUBSPOT_ACCESS_TOKEN
+        sync: false
+      - key: CLICKUP_API_TOKEN
+        sync: false
+      - key: CLICKUP_WORKSPACE_ID
+        sync: false
+      - key: CLICKUP_BUG_LIST_ID
+        sync: false

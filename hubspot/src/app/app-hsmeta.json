@@ -1,0 +1,26 @@
+{
+  "uid": "clickup_bug_linker",
+  "type": "app",
+  "config": {
+    "name": "ClickUp Bug Linker",
+    "description": "Link HubSpot support tickets to ClickUp bugs.",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": [
+        "oauth",
+        "crm.objects.tickets.read",
+        "crm.objects.tickets.write",
+        "crm.schemas.tickets.read",
+        "crm.schemas.tickets.write"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": ["https://detached-worsening-happily.ngrok-free.dev/api/"],
+      "iframe": [],
+      "img": []
+    }
+  }
+}

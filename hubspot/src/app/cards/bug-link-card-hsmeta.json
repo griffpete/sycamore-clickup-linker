@@ -1,0 +1,11 @@
+{
+  "uid": "clickup_bug_link_card",
+  "type": "card",
+  "config": {
+    "name": "ClickUp bug",
+    "description": "Find the ClickUp bug behind this ticket and link it.",
+    "location": "helpdesk.sidebar",
+    "entrypoint": "/app/cards/BugLinkCard.jsx",
+    "objectTypes": ["tickets"]
+  }
+}
