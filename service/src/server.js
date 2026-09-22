@@ -21,7 +21,14 @@ app.use(
 );
 
 app.get("/health", (req, res) => {
-  res.json({ ok: true });
+  res.json({
+    ok: true,
+    publicBaseUrl: config.publicBaseUrl,
+    hasClientSecret: Boolean(config.hubspotClientSecret),
+    clientSecretLength: config.hubspotClientSecret.length,
+    hasAccessToken: Boolean(config.hubspotAccessToken),
+    bugListId: config.clickupBugListId
+  });
 });
 
 app.use("/api", verifyHubSpotRequest);
