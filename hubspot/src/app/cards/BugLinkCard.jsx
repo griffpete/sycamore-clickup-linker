@@ -17,7 +17,7 @@ import {
   useDebounce
 } from "@hubspot/ui-extensions";
 
-const SERVICE_URL = "https://detached-worsening-happily.ngrok-free.dev";
+const SERVICE_URL = "https://sycamore-clickup-linker.onrender.com";
 const REQUEST_TIMEOUT_MS = 30000;
 const PAGE_SIZE = 3;
 const SEARCH_LIMIT = 100;

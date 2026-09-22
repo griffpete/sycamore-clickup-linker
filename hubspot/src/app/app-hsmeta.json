@@ -18,7 +18,9 @@
       "conditionallyRequiredScopes": []
     },
     "permittedUrls": {
-      "fetch": ["https://detached-worsening-happily.ngrok-free.dev/api/"],
+      "fetch": [
+        "https://sycamore-clickup-linker.onrender.com/api/"
+      ],
       "iframe": [],
       "img": []
     }
