@@ -50,7 +50,7 @@ ngrok: `ngrok http 3000 --url=detached-worsening-happily.ngrok-free.dev`
 - `HUBSPOT_ACCESS_TOKEN` is the static token from the app's Distribution tab, not the Auth tab.
 - `PUBLIC_BASE_URL` must exactly match the URL HubSpot calls or signature checks fail.
 - `hubspot.fetch` only reaches URLs in `permittedUrls.fetch`, never localhost. Changes need `hs project upload`.
-- A card has exactly one `location`. Changing it removes the card from its old place.
+- A card has exactly one `location`. Changing it removes the card from its old place. Two cards share `BugLinkCard.jsx`: `clickup_bug_link_card` at `helpdesk.sidebar` and `clickup_bug_link_record_card` at `crm.record.sidebar`.
 - UI extension `Input` and `SearchInput` fire `onChange` on blur. Use `onInput` with `useDebounce` for live search.
 - ClickUp has no text search endpoint, so search runs against the in-memory cache.
 - ClickUp statuses come back lowercase. Status `type` of `closed` or `done` means closed.
