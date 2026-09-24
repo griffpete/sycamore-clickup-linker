@@ -93,35 +93,42 @@ const BugResult = ({ bug, linkedBugId, hasLinkedBug, isSaving, onLink }) => {
   );
 };
 
-const CreateBugForm = ({ isSaving, onCancel, onCreate }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
+  const [name, setName] = useState(context.subject ?? "");
+  const [describe, setDescribe] = useState("");
+  const [steps, setSteps] = useState("");
+  const [school, setSchool] = useState(context.school ?? "");
+  const [username, setUsername] = useState(context.username ?? "");
 
   return (
     <Tile compact>
       <Flex direction="column" gap="xs">
         <Text format={{ fontWeight: "demibold" }}>New bug</Text>
-        <Input
-          label="Bug name"
-          name="newBugName"
-          placeholder="Short summary of the problem"
-          value={name}
-          onInput={setName}
-        />
+        <Input label="Bug name" name="newBugName" placeholder="Short summary of the problem" value={name} onInput={setName} />
         <TextArea
-          label="Details"
-          name="newBugDescription"
-          placeholder="What happens, and how to reproduce it"
-          value={description}
-          onInput={setDescription}
+          label="Describe the issue"
+          name="newBugDescribe"
+          placeholder="Details matter. Context is helpful. Screenshots and videos are great."
+          value={describe}
+          onInput={setDescribe}
           rows={4}
         />
+        <TextArea
+          label="Steps to replicate"
+          name="newBugSteps"
+          placeholder="What steps are necessary to replicate this issue? Don't assume."
+          value={steps}
+          onInput={setSteps}
+          rows={3}
+        />
+        <Input label="School" name="newBugSchool" placeholder="School name and ID" value={school} onInput={setSchool} />
+        <Input label="Username" name="newBugUsername" placeholder="Who reported it" value={username} onInput={setUsername} />
         <Flex gap="xs">
           <Button
             size="xs"
             variant="primary"
             disabled={isSaving || !name.trim()}
-            onClick={() => onCreate({ name, description })}
+            onClick={() => onCreate({ name, describe, steps, school, username })}
           >
             Create and link
           </Button>
@@ -145,9 +152,16 @@ const ClickUpBugCard = ({ ticketId, addAlert }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [refreshCount, setRefreshCount] = useState(0);
   const [isCreating, setIsCreating] = useState(false);
+  const [bugContext, setBugContext] = useState({});
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [errorMessage, setErrorMessage] = useState("");
   const debouncedSearchText = useDebounce(searchText, 300);
+
+  useEffect(() => {
+    callService(`/api/tickets/${ticketId}/bug-context`)
+      .then(setBugContext)
+      .catch(() => setBugContext({}));
+  }, [ticketId]);
 
   useEffect(() => {
     setIsLoadingLink(true);
@@ -211,11 +225,11 @@ const ClickUpBugCard = ({ ticketId, addAlert }) => {
       `Linked "${bug.name}"`
     );
 
-  const handleCreate = ({ name, description }) =>
+  const handleCreate = ({ name, describe, steps, school, username }) =>
     saveLink(async () => {
       const created = await callService(`/api/bugs`, {
         method: "POST",
-        body: { name, description, ticketId }
+        body: { name, describe, steps, school, username, ticketId }
       });
 
       const linked = await callService(`/api/tickets/${ticketId}/linked-bug`, {
@@ -312,7 +326,12 @@ const ClickUpBugCard = ({ ticketId, addAlert }) => {
       <Divider />
 
       {isCreating ? (
-        <CreateBugForm isSaving={isSaving} onCancel={() => setIsCreating(false)} onCreate={handleCreate} />
+        <CreateBugForm
+          context={bugContext}
+          isSaving={isSaving}
+          onCancel={() => setIsCreating(false)}
+          onCreate={handleCreate}
+        />
       ) : (
         <Button size="xs" variant="secondary" disabled={isSaving} onClick={() => setIsCreating(true)}>
           Can't find it? Create a bug

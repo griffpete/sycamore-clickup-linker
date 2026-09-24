@@ -39,9 +39,11 @@ ngrok: `ngrok http 3000 --url=detached-worsening-happily.ngrok-free.dev`
 
 ## Creating bugs from the card
 
-- The card has a "Can't find it? Create a bug" form with a name and details field.
-- `POST /api/bugs` creates the task in the ClickUp bug list, adds it to the cache, and returns it. The card then links it to the ticket.
-- The task description gets a link back to the HubSpot ticket and the agent's email.
+- The card's "Can't find it? Create a bug" form takes a bug name, the issue, the steps to replicate, the school, and the username.
+- `GET /api/tickets/:ticketId/bug-context` prefills the form from the ticket: subject, `freshdesk_company` as the school, and `freshdesk_requester_email` as the username.
+- `POST /api/bugs` creates the task, adds it to the cache, and returns it. The card then links it to the ticket.
+- The description follows the list's own template: "Describe the issue", "Steps to Replicate", then "Reporting Schools" with school, username, and the HubSpot ticket URL.
+- Two custom fields are set, Ticket URL and Requesting School (`src/bugTemplate.js` holds their IDs). The team leaves Notes, Summary, Feedback Type, User Type, and Ticket # empty, so the card does too. GitHub PR and Days stale are filled in ClickUp.
 
 ## Gotchas
 
