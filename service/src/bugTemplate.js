@@ -1,6 +1,6 @@
 export const CUSTOM_FIELD_IDS = {
   ticketUrl: "605b126f-fb70-4c6a-9d44-1544dd69323b",
-  requestingSchool: "cd1a0dc5-58bd-4b56-8818-4f884c6e3f53"
+  reportingSchools: "3442ead3-c869-4d64-a3a8-d5d4cdd6d3e4"
 };
 
 const DESCRIBE_HELP = "_Details matter. Context is helpful. Screenshots and videos are great._";
@@ -49,7 +49,7 @@ export function buildCustomFields({ ticketUrl, school }) {
   }
 
   if (school?.trim()) {
-    fields.push({ id: CUSTOM_FIELD_IDS.requestingSchool, value: school.trim() });
+    fields.push({ id: CUSTOM_FIELD_IDS.reportingSchools, value: school.trim() });
   }
 
   return fields;

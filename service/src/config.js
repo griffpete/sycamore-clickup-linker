@@ -25,5 +25,10 @@ export const config = {
   hubspotAccessToken: process.env.HUBSPOT_ACCESS_TOKEN,
   clickupApiToken: process.env.CLICKUP_API_TOKEN,
   clickupWorkspaceId: process.env.CLICKUP_WORKSPACE_ID,
-  clickupBugListId: process.env.CLICKUP_BUG_LIST_ID ?? ""
+  clickupBugListId: process.env.CLICKUP_BUG_LIST_ID ?? "",
+  clickupSearchListIds: (process.env.CLICKUP_SEARCH_LIST_IDS ?? process.env.CLICKUP_BUG_LIST_ID ?? "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean),
+  clickupCreateListId: process.env.CLICKUP_CREATE_LIST_ID ?? process.env.CLICKUP_BUG_LIST_ID ?? ""
 };

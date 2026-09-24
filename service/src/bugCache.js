@@ -30,23 +30,37 @@ function getStatuses(list, bugs) {
   return [...new Set(bugs.map((bug) => bug.status))];
 }
 
+async function loadList(listId) {
+  const [list, tasks] = await Promise.all([getList(listId), getListTasks(listId)]);
+  return { list, tasks };
+}
+
 async function loadBugs() {
-  if (!config.clickupBugListId) {
-    throw new Error("CLICKUP_BUG_LIST_ID is not set.");
+  if (config.clickupSearchListIds.length === 0) {
+    throw new Error("CLICKUP_SEARCH_LIST_IDS or CLICKUP_BUG_LIST_ID must be set.");
   }
 
-  const [list, tasks] = await Promise.all([
-    getList(config.clickupBugListId),
-    getListTasks(config.clickupBugListId)
-  ]);
+  const loaded = await Promise.all(config.clickupSearchListIds.map(loadList));
+  const bugs = [];
+  const statuses = [];
 
-  const bugs = tasks.map(toBug);
-  console.log(`Loaded ${bugs.length} bugs from ClickUp list "${list.name}"`);
+  for (const { list, tasks } of loaded) {
+    bugs.push(...tasks.map(toBug));
+
+    for (const status of getStatuses(list, tasks.map(toBug))) {
+      if (!statuses.includes(status)) {
+        statuses.push(status);
+      }
+    }
+  }
+
+  const listName = loaded.map(({ list }) => list.name).join(" + ");
+  console.log(`Loaded ${bugs.length} bugs from ${loaded.length} ClickUp list(s): ${listName}`);
 
   return {
-    listName: list.name,
-    statuses: getStatuses(list, bugs),
-    bugs,
+    listName,
+    statuses,
+    bugs: bugs.sort((a, b) => b.updatedAt - a.updatedAt),
     loadedAt: Date.now()
   };
 }
@@ -114,5 +128,5 @@ export async function getCurrentBug(bugId) {
     return null;
   }
 
-  return { ...toBug(task), stillInList: task.list?.id === config.clickupBugListId };
+  return { ...toBug(task), stillInList: config.clickupSearchListIds.includes(String(task.list?.id)) };
 }

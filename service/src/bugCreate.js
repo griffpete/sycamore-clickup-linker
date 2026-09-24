@@ -19,7 +19,7 @@ export async function createBug({ name, describe, expected, steps, school, usern
 
   const ticketUrl = ticketId && portalId ? `https://app.hubspot.com/contacts/${portalId}/ticket/${ticketId}` : "";
 
-  const task = await createTask(config.clickupBugListId, {
+  const task = await createTask(config.clickupCreateListId, {
     name: trimmedName,
     markdown_description: buildBugDescription({ describe, expected, steps, school, username, ticketUrl, createdBy: userEmail }),
     custom_fields: buildCustomFields({ ticketUrl, school })

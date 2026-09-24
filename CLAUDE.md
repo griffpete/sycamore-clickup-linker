@@ -43,7 +43,7 @@ ngrok: `ngrok http 3000 --url=detached-worsening-happily.ngrok-free.dev`
 - `GET /api/tickets/:ticketId/bug-context` prefills the form from the ticket: subject, `freshdesk_company` as the school, and `freshdesk_requester_email` as the username.
 - `POST /api/bugs` creates the task, adds it to the cache, and returns it. The card then links it to the ticket.
 - The description follows the "Bug Report" template task (86bc3da0k): "Describe the issue", "Expected Behavior", "Steps to Replicate", then "Reporting Schools" with school, username, and the HubSpot ticket URL. It is sent as `markdown_description` so the headings render.
-- Two custom fields are set, Ticket URL and Requesting School (`src/bugTemplate.js` holds their IDs). The team leaves Notes, Summary, Feedback Type, User Type, and Ticket # empty, so the card does too. GitHub PR and Days stale are filled in ClickUp.
+- Two custom fields are set, Ticket URL and Reporting Schools (`src/bugTemplate.js` holds their IDs). The team leaves Notes, Summary, Feedback Type, User Type, and Ticket # empty, so the card does too. GitHub PR and Days stale are filled in ClickUp.
 
 ## Gotchas
 
