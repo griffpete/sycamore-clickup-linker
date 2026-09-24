@@ -43,7 +43,7 @@ ngrok: `ngrok http 3000 --url=detached-worsening-happily.ngrok-free.dev`
 - `GET /api/tickets/:ticketId/bug-context` prefills the bug name from the ticket subject and tells the card which school it will file under. The service reads the school from `hs_primary_company_name`, falling back to `freshdesk_company`, and the reporter from `hs_all_associated_contact_emails`, falling back to `freshdesk_requester_email`. No company scope is needed.
 - `POST /api/bugs` creates the task, adds it to the cache, and returns it. The card then links it to the ticket.
 - The description follows the "Bug Report" template task (86bc3da0k): "Describe the issue" with the agent's text, then empty "Expected Behavior" and "Steps to Replicate" sections for the dev team, then "Reporting Schools" with school, reporter, and the HubSpot ticket URL. It is sent as `markdown_description` so the headings render.
-- Two custom fields are set, Ticket URL and Reporting Schools (`src/bugTemplate.js` holds their IDs). The team leaves Notes, Summary, Feedback Type, User Type, and Ticket # empty, so the card does too. GitHub PR and Days stale are filled in ClickUp.
+- Three custom fields are set: Ticket URL, Reporting Schools (school, reporter, ticket URL) and Note (which agent filed it). `src/bugTemplate.js` holds their IDs. Assigned Comment Assignee, GitHub PR and Days Stale are left to ClickUp. Which fields appear on a task is a list setting, not something the API controls. The team leaves Notes, Summary, Feedback Type, User Type, and Ticket # empty, so the card does too. GitHub PR and Days stale are filled in ClickUp.
 
 ## Gotchas
 

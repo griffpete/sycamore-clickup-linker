@@ -26,10 +26,14 @@ export async function createBug({ name, describe, ticketId, portalId, userEmail 
       describe,
       school: context.school,
       username: context.username,
-      ticketUrl: context.ticketUrl,
-      createdBy: userEmail
+      ticketUrl: context.ticketUrl
     }),
-    custom_fields: buildCustomFields({ ticketUrl: context.ticketUrl, school: context.school })
+    custom_fields: buildCustomFields({
+      ticketUrl: context.ticketUrl,
+      school: context.school,
+      username: context.username,
+      createdBy: userEmail
+    })
   });
 
   return addBugToCache(task);
