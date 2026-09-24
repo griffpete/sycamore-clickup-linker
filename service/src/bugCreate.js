@@ -6,7 +6,7 @@ import { buildBugDescription, buildCustomFields } from "./bugTemplate.js";
 
 const MAX_NAME_LENGTH = 255;
 
-export async function createBug({ name, describe, steps, school, username, ticketId, portalId, userEmail }) {
+export async function createBug({ name, describe, expected, steps, school, username, ticketId, portalId, userEmail }) {
   const trimmedName = name?.trim();
 
   if (!trimmedName) {
@@ -21,7 +21,7 @@ export async function createBug({ name, describe, steps, school, username, ticke
 
   const task = await createTask(config.clickupBugListId, {
     name: trimmedName,
-    description: buildBugDescription({ describe, steps, school, username, ticketUrl, createdBy: userEmail }),
+    markdown_description: buildBugDescription({ describe, expected, steps, school, username, ticketUrl, createdBy: userEmail }),
     custom_fields: buildCustomFields({ ticketUrl, school })
   });
 

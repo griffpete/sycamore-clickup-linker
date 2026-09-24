@@ -96,6 +96,7 @@ const BugResult = ({ bug, linkedBugId, hasLinkedBug, isSaving, onLink }) => {
 const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
   const [name, setName] = useState(context.subject ?? "");
   const [describe, setDescribe] = useState("");
+  const [expected, setExpected] = useState("");
   const [steps, setSteps] = useState("");
   const [school, setSchool] = useState(context.school ?? "");
   const [username, setUsername] = useState(context.username ?? "");
@@ -114,6 +115,14 @@ const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
           rows={4}
         />
         <TextArea
+          label="Expected behavior"
+          name="newBugExpected"
+          placeholder="What should happen instead"
+          value={expected}
+          onInput={setExpected}
+          rows={2}
+        />
+        <TextArea
           label="Steps to replicate"
           name="newBugSteps"
           placeholder="What steps are necessary to replicate this issue? Don't assume."
@@ -128,7 +137,7 @@ const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
             size="xs"
             variant="primary"
             disabled={isSaving || !name.trim()}
-            onClick={() => onCreate({ name, describe, steps, school, username })}
+            onClick={() => onCreate({ name, describe, expected, steps, school, username })}
           >
             Create and link
           </Button>
@@ -225,11 +234,11 @@ const ClickUpBugCard = ({ ticketId, addAlert }) => {
       `Linked "${bug.name}"`
     );
 
-  const handleCreate = ({ name, describe, steps, school, username }) =>
+  const handleCreate = ({ name, describe, expected, steps, school, username }) =>
     saveLink(async () => {
       const created = await callService(`/api/bugs`, {
         method: "POST",
-        body: { name, describe, steps, school, username, ticketId }
+        body: { name, describe, expected, steps, school, username, ticketId }
       });
 
       const linked = await callService(`/api/tickets/${ticketId}/linked-bug`, {

@@ -3,9 +3,9 @@ export const CUSTOM_FIELD_IDS = {
   requestingSchool: "cd1a0dc5-58bd-4b56-8818-4f884c6e3f53"
 };
 
-const DESCRIBE_HELP = "Details matter. Context is helpful. Screenshots and videos are great.";
-const STEPS_HELP = "What steps are necessary to replicate this issue? Don't assume.";
-const SCHOOLS_HELP = "Include the School ID, username, and ticket URL.";
+const DESCRIBE_HELP = "_Details matter. Context is helpful. Screenshots and videos are great._";
+const STEPS_HELP = "_What steps are necessary to replicate this issue? Don't assume._";
+const SCHOOLS_HELP = "_Include the School ID, username, and ticket URL._";
 
 function reportingLine({ school, username, ticketUrl }) {
   const parts = [school, username].map((part) => part?.trim()).filter(Boolean);
@@ -18,24 +18,27 @@ function reportingLine({ school, username, ticketUrl }) {
   return prefix ? `${prefix}, ticket URL: ${ticketUrl}` : `ticket URL: ${ticketUrl}`;
 }
 
-export function buildBugDescription({ describe, steps, school, username, ticketUrl, createdBy }) {
+export function buildBugDescription({ describe, expected, steps, school, username, ticketUrl, createdBy }) {
   const sections = [
-    "Describe the issue",
+    "### Describe the issue",
     describe?.trim() || DESCRIBE_HELP,
     "",
-    "Steps to Replicate",
+    "### **Expected Behavior**",
+    expected?.trim() || "",
+    "",
+    "### Steps to Replicate",
     steps?.trim() || STEPS_HELP,
     "",
-    "Reporting Schools",
+    "### Reporting Schools",
     SCHOOLS_HELP,
     reportingLine({ school, username, ticketUrl })
   ];
 
   if (createdBy) {
-    sections.push("", `Reported from HubSpot by ${createdBy}`);
+    sections.push("", `_Filed from HubSpot by ${createdBy}_`);
   }
 
-  return sections.join("\n").trim();
+  return sections.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 export function buildCustomFields({ ticketUrl, school }) {
