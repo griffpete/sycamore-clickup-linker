@@ -1,15 +1,19 @@
 import { getTicketProperties } from "./hubspot.js";
 
-const CONTEXT_PROPERTIES = ["subject", "freshdesk_company", "freshdesk_requester_email"];
+const CONTEXT_PROPERTIES = [
+  "subject",
+  "hs_primary_company_name",
+  "freshdesk_company",
+  "hs_all_associated_contact_emails",
+  "freshdesk_requester_email"
+];
 
-function schoolFrom(properties) {
-  const company = properties.freshdesk_company;
+function cleanCompany(name) {
+  return (name ?? "").replace(/\s*\*\*FD\*\*\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+}
 
-  if (!company) {
-    return "";
-  }
-
-  return company.replace(/\s*\*\*FD\*\*\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+function firstEmail(value) {
+  return (value ?? "").split(";")[0].trim();
 }
 
 export async function getTicketContext(ticketId, portalId) {
@@ -18,8 +22,8 @@ export async function getTicketContext(ticketId, portalId) {
 
   return {
     subject: properties.subject ?? "",
-    school: schoolFrom(properties),
-    username: properties.freshdesk_requester_email ?? "",
+    school: cleanCompany(properties.hs_primary_company_name || properties.freshdesk_company),
+    username: firstEmail(properties.hs_all_associated_contact_emails) || properties.freshdesk_requester_email || "",
     ticketUrl: portalId ? `https://app.hubspot.com/contacts/${portalId}/ticket/${ticketId}` : ""
   };
 }

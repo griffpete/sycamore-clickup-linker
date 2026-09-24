@@ -96,10 +96,6 @@ const BugResult = ({ bug, linkedBugId, hasLinkedBug, isSaving, onLink }) => {
 const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
   const [name, setName] = useState(context.subject ?? "");
   const [describe, setDescribe] = useState("");
-  const [expected, setExpected] = useState("");
-  const [steps, setSteps] = useState("");
-  const [school, setSchool] = useState(context.school ?? "");
-  const [username, setUsername] = useState(context.username ?? "");
 
   return (
     <Tile compact>
@@ -114,30 +110,12 @@ const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
           onInput={setDescribe}
           rows={4}
         />
-        <TextArea
-          label="Expected behavior"
-          name="newBugExpected"
-          placeholder="What should happen instead"
-          value={expected}
-          onInput={setExpected}
-          rows={2}
-        />
-        <TextArea
-          label="Steps to replicate"
-          name="newBugSteps"
-          placeholder="What steps are necessary to replicate this issue? Don't assume."
-          value={steps}
-          onInput={setSteps}
-          rows={3}
-        />
-        <Input label="School" name="newBugSchool" placeholder="School name and ID" value={school} onInput={setSchool} />
-        <Input label="Username" name="newBugUsername" placeholder="Who reported it" value={username} onInput={setUsername} />
         <Flex gap="xs">
           <Button
             size="xs"
             variant="primary"
             disabled={isSaving || !name.trim()}
-            onClick={() => onCreate({ name, describe, expected, steps, school, username })}
+            onClick={() => onCreate({ name, describe })}
           >
             Create and link
           </Button>
@@ -145,7 +123,11 @@ const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
             Cancel
           </Button>
         </Flex>
-        <Text variant="microcopy">The bug is added to the ClickUp bug list and linked to this ticket.</Text>
+        <Text variant="microcopy">
+          {context.school
+            ? `Filed for ${context.school} with a link to this ticket.`
+            : "The bug is added to the ClickUp bug list and linked to this ticket."}
+        </Text>
       </Flex>
     </Tile>
   );
@@ -234,11 +216,11 @@ const ClickUpBugCard = ({ ticketId, addAlert }) => {
       `Linked "${bug.name}"`
     );
 
-  const handleCreate = ({ name, describe, expected, steps, school, username }) =>
+  const handleCreate = ({ name, describe }) =>
     saveLink(async () => {
       const created = await callService(`/api/bugs`, {
         method: "POST",
-        body: { name, describe, expected, steps, school, username, ticketId }
+        body: { name, describe, ticketId }
       });
 
       const linked = await callService(`/api/tickets/${ticketId}/linked-bug`, {

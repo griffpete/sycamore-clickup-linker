@@ -3,10 +3,11 @@ import { createTask } from "./clickup.js";
 import { addBugToCache } from "./bugCache.js";
 import { HttpError } from "./httpError.js";
 import { buildBugDescription, buildCustomFields } from "./bugTemplate.js";
+import { getTicketContext } from "./ticketContext.js";
 
 const MAX_NAME_LENGTH = 255;
 
-export async function createBug({ name, describe, expected, steps, school, username, ticketId, portalId, userEmail }) {
+export async function createBug({ name, describe, ticketId, portalId, userEmail }) {
   const trimmedName = name?.trim();
 
   if (!trimmedName) {
@@ -17,12 +18,18 @@ export async function createBug({ name, describe, expected, steps, school, usern
     throw new HttpError(400, `Keep the bug name under ${MAX_NAME_LENGTH} characters.`);
   }
 
-  const ticketUrl = ticketId && portalId ? `https://app.hubspot.com/contacts/${portalId}/ticket/${ticketId}` : "";
+  const context = ticketId ? await getTicketContext(ticketId, portalId) : {};
 
   const task = await createTask(config.clickupCreateListId, {
     name: trimmedName,
-    markdown_description: buildBugDescription({ describe, expected, steps, school, username, ticketUrl, createdBy: userEmail }),
-    custom_fields: buildCustomFields({ ticketUrl, school })
+    markdown_description: buildBugDescription({
+      describe,
+      school: context.school,
+      username: context.username,
+      ticketUrl: context.ticketUrl,
+      createdBy: userEmail
+    }),
+    custom_fields: buildCustomFields({ ticketUrl: context.ticketUrl, school: context.school })
   });
 
   return addBugToCache(task);
