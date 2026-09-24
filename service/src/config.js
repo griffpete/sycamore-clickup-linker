@@ -30,5 +30,9 @@ export const config = {
     .split(",")
     .map((id) => id.trim())
     .filter(Boolean),
-  clickupCreateListId: process.env.CLICKUP_CREATE_LIST_ID ?? process.env.CLICKUP_BUG_LIST_ID ?? ""
+  clickupCreateListId: process.env.CLICKUP_CREATE_LIST_ID ?? process.env.CLICKUP_BUG_LIST_ID ?? "",
+  clickupBugTags: (process.env.CLICKUP_BUG_TAGS ?? "bug")
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean)
 };

@@ -22,6 +22,7 @@ export async function createBug({ name, describe, expected, steps, ticketId, por
 
   const task = await createTask(config.clickupCreateListId, {
     name: trimmedName,
+    tags: config.clickupBugTags,
     markdown_description: buildBugDescription({
       describe,
       expected,
