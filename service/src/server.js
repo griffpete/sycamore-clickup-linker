@@ -59,6 +59,8 @@ app.post("/api/bugs", async (req, res) => {
   const bug = await createBug({
     name: req.body?.name,
     describe: req.body?.describe,
+    expected: req.body?.expected,
+    steps: req.body?.steps,
     ticketId: req.body?.ticketId,
     portalId: req.query.portalId,
     userEmail: req.query.userEmail

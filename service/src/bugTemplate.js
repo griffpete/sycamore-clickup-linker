@@ -19,15 +19,16 @@ function reportingLine({ school, username, ticketUrl }) {
   return prefix ? `${prefix}, ticket URL: ${ticketUrl}` : `ticket URL: ${ticketUrl}`;
 }
 
-export function buildBugDescription({ describe, school, username, ticketUrl }) {
+export function buildBugDescription({ describe, expected, steps, school, username, ticketUrl }) {
   const sections = [
     "### Describe the issue",
     describe?.trim() || DESCRIBE_HELP,
     "",
     "### **Expected Behavior**",
+    expected?.trim() || "",
     "",
     "### Steps to Replicate",
-    STEPS_HELP,
+    steps?.trim() || STEPS_HELP,
     "",
     "### Reporting Schools",
     SCHOOLS_HELP,

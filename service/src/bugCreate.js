@@ -7,7 +7,7 @@ import { getTicketContext } from "./ticketContext.js";
 
 const MAX_NAME_LENGTH = 255;
 
-export async function createBug({ name, describe, ticketId, portalId, userEmail }) {
+export async function createBug({ name, describe, expected, steps, ticketId, portalId, userEmail }) {
   const trimmedName = name?.trim();
 
   if (!trimmedName) {
@@ -24,6 +24,8 @@ export async function createBug({ name, describe, ticketId, portalId, userEmail 
     name: trimmedName,
     markdown_description: buildBugDescription({
       describe,
+      expected,
+      steps,
       school: context.school,
       username: context.username,
       ticketUrl: context.ticketUrl

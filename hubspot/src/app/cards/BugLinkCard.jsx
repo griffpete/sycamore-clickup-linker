@@ -96,6 +96,8 @@ const BugResult = ({ bug, linkedBugId, hasLinkedBug, isSaving, onLink }) => {
 const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
   const [name, setName] = useState(context.subject ?? "");
   const [describe, setDescribe] = useState("");
+  const [expected, setExpected] = useState("");
+  const [steps, setSteps] = useState("");
 
   return (
     <Tile compact>
@@ -110,12 +112,28 @@ const CreateBugForm = ({ context, isSaving, onCancel, onCreate }) => {
           onInput={setDescribe}
           rows={4}
         />
+        <TextArea
+          label="Expected behavior"
+          name="newBugExpected"
+          placeholder="What should happen instead"
+          value={expected}
+          onInput={setExpected}
+          rows={2}
+        />
+        <TextArea
+          label="Steps to replicate"
+          name="newBugSteps"
+          placeholder="What steps are necessary to replicate this issue? Don't assume."
+          value={steps}
+          onInput={setSteps}
+          rows={3}
+        />
         <Flex gap="xs">
           <Button
             size="xs"
             variant="primary"
             disabled={isSaving || !name.trim()}
-            onClick={() => onCreate({ name, describe })}
+            onClick={() => onCreate({ name, describe, expected, steps })}
           >
             Create and link
           </Button>
@@ -216,11 +234,11 @@ const ClickUpBugCard = ({ ticketId, addAlert }) => {
       `Linked "${bug.name}"`
     );
 
-  const handleCreate = ({ name, describe }) =>
+  const handleCreate = ({ name, describe, expected, steps }) =>
     saveLink(async () => {
       const created = await callService(`/api/bugs`, {
         method: "POST",
-        body: { name, describe, ticketId }
+        body: { name, describe, expected, steps, ticketId }
       });
 
       const linked = await callService(`/api/tickets/${ticketId}/linked-bug`, {
