@@ -4,6 +4,7 @@ import { HttpError } from "./httpError.js";
 import { verifyHubSpotRequest } from "./verifyHubSpotRequest.js";
 import { findBug, getBugData, getCurrentBug } from "./bugCache.js";
 import { createBug } from "./bugCreate.js";
+import { addReportToBug } from "./bugReport.js";
 import { getTicketContext } from "./ticketContext.js";
 import { searchBugs } from "./bugSearch.js";
 import { getLinkedBug, linkBug, unlinkBug } from "./ticketLink.js";
@@ -28,7 +29,7 @@ app.get("/health", (req, res) => {
     hasClientSecret: Boolean(config.hubspotClientSecret),
     clientSecretLength: config.hubspotClientSecret.length,
     hasAccessToken: Boolean(config.hubspotAccessToken),
-    bugListId: config.clickupBugListId
+    createListOverride: config.clickupCreateListId || null
   });
 });
 
@@ -44,7 +45,9 @@ app.get("/api/bugs", async (req, res) => {
 
   res.json({
     listName: data.listName,
+    createListName: data.createListName,
     statuses: data.statuses,
+    tags: data.tags,
     loadedAt: data.loadedAt,
     total,
     bugs
@@ -61,6 +64,8 @@ app.post("/api/bugs", async (req, res) => {
     describe: req.body?.describe,
     expected: req.body?.expected,
     steps: req.body?.steps,
+    priority: req.body?.priority,
+    tags: req.body?.tags,
     ticketId: req.body?.ticketId,
     portalId: req.query.portalId,
     userEmail: req.query.userEmail
@@ -99,6 +104,16 @@ app.put("/api/tickets/:ticketId/linked-bug", async (req, res) => {
 
   if (!bug) {
     throw new HttpError(404, "That bug is no longer in the ClickUp list. Refresh and pick another.");
+  }
+
+  if (!req.body?.justCreated) {
+    await addReportToBug({
+      bugId,
+      details: req.body?.details,
+      ticketId: req.params.ticketId,
+      portalId: req.query.portalId,
+      userEmail: req.query.userEmail
+    });
   }
 
   const linkedBug = await linkBug(req.params.ticketId, bug, req.query.userEmail);

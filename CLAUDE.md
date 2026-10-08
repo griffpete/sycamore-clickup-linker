@@ -62,3 +62,14 @@ ngrok: `ngrok http 3000 --url=detached-worsening-happily.ngrok-free.dev`
 - This folder lives on the iCloud-synced Desktop. After `npm install`, iCloud touches every file in `node_modules` for a while. Node's `--env-file` flag makes watch mode watch the whole `service/` folder, so it restarts in a loop. That is why `config.js` loads `.env` itself and `npm run dev` uses `--watch-path=src` with no `--env-file`.
 - Each restart reloads the bug list (about 6 ClickUp requests). Restart loops burn through the 100 requests per minute limit.
 - `hs project upload --force-create` is deprecated and fails to find the project. Use `hs project upload` or `--force`.
+
+## Three paths on the card (added 2026-10-08, from Kimberly's thread on ClickUp 86bc3b9my)
+
+The card opens with a radio choice: no bug needed (default), add this ticket to an existing bug, or create a new bug. Most tickets need no bug; that is agent discretion.
+
+- **Add to an existing bug** requires a report ("What did the school report?"). `PUT /api/tickets/:id/linked-bug` with `{bugId, details}` posts a comment on the ClickUp task (`src/bugReport.js`: school, reporter, ticket URL, filing agent, then the text) and then links. A PUT without `details` is rejected unless `justCreated: true`, which the create path sends right after `POST /api/bugs`.
+- **Create a new bug** adds a priority select (urgent/high/normal/low → ClickUp 1–4) and a tag multi-select. Tag options are the tags of the current bug space minus the automatic `bug` tag (`CLICKUP_BUG_TAGS`), loaded live, so Kimberly adds tags in ClickUp and they appear on the next cache refresh (5 min). Unknown tags sent by a client are dropped server-side.
+
+## Quarter lists
+
+`src/bugLists.js` finds every ClickUp space whose name starts like `2026 Q4 Bugs` (regex `^\d{4}\s*Q[1-4]\b.*bugs`, case-insensitive), picks the newest quarter, and inside it the list named like "bug" or else the first list. New bugs go there; searches cover every quarter list plus `CLICKUP_SEARCH_LIST_IDS` (the legacy 500-bug list, 162901508). Kimberly switches quarters by creating a new space named e.g. `2027 Q1 Bugs (Suspected)` with the bug template list and the tags she wants; nothing else changes. `CLICKUP_CREATE_LIST_ID` is now an optional override and should be removed from Render so the auto-switch works. Tags are per space, so the 15 tags created on 2026-10-08 in the Q4 space need recreating in each new quarter space (or copy the space).

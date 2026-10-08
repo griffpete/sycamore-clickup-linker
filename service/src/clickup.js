@@ -12,16 +12,24 @@ export function clickupRequest(path) {
   );
 }
 
-export function createTask(listId, task) {
+function clickupPost(path, body) {
   return requestJson(
-    `${CLICKUP_API}/list/${listId}/task`,
+    `${CLICKUP_API}${path}`,
     {
       method: "POST",
       headers: { Authorization: config.clickupApiToken, "Content-Type": "application/json" },
-      body: JSON.stringify(task)
+      body: JSON.stringify(body)
     },
-    `ClickUp POST /list/${listId}/task`
+    `ClickUp POST ${path}`
   );
+}
+
+export function createTask(listId, task) {
+  return clickupPost(`/list/${listId}/task`, task);
+}
+
+export function createTaskComment(taskId, commentText) {
+  return clickupPost(`/task/${encodeURIComponent(taskId)}/comment`, { comment_text: commentText, notify_all: false });
 }
 
 export async function getSpaces(workspaceId) {
@@ -37,6 +45,16 @@ export async function getFolders(spaceId) {
 export async function getFolderlessLists(spaceId) {
   const data = await clickupRequest(`/space/${spaceId}/list?archived=false`);
   return data.lists;
+}
+
+export async function getSpaceLists(spaceId) {
+  const [folders, folderless] = await Promise.all([getFolders(spaceId), getFolderlessLists(spaceId)]);
+  return [...folders.flatMap((folder) => folder.lists ?? []), ...folderless];
+}
+
+export async function getSpaceTags(spaceId) {
+  const data = await clickupRequest(`/space/${spaceId}/tag`);
+  return (data.tags ?? []).map((tag) => tag.name);
 }
 
 export function getList(listId) {

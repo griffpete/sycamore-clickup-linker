@@ -12,7 +12,9 @@
         "crm.objects.tickets.read",
         "crm.objects.tickets.write",
         "crm.schemas.tickets.read",
-        "crm.schemas.tickets.write"
+        "crm.schemas.tickets.write",
+        "files.read",
+        "files.write"
       ],
       "optionalScopes": [],
       "conditionallyRequiredScopes": []

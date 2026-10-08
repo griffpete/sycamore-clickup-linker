@@ -8,6 +8,17 @@ This repo currently contains **Phase 0**: a connection check that proves the thr
 2. The card can reach our sync service through `hubspot.fetch()`, and the service can verify HubSpot's request signature.
 3. The service can read HubSpot tickets and talk to the ClickUp API.
 
+
+## Quarterly bug lists (for Kimberly)
+
+Bugs filed from HubSpot go to the newest ClickUp space whose name starts with a year and quarter followed by "Bugs", for example `2026 Q4 Bugs (Suspected)`. To start a new quarter:
+
+1. In ClickUp, create a new space named like `2027 Q1 Bugs (Suspected)` and add the bug list to it (copying the previous quarter's space keeps the statuses, custom fields and tags).
+2. Make sure the tags agents should be able to pick exist in that space. The `bug` tag is added automatically; every other tag in the space is offered on the create form.
+3. That is all. Within five minutes the HubSpot card files new bugs into the new space and still searches the older quarters.
+
+If `CLICKUP_CREATE_LIST_ID` is set on the host it pins the target list and overrides this. Leave it unset.
+
 ## Layout
 
 ```

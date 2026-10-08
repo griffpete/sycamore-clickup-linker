@@ -1,5 +1,5 @@
-import { config } from "./config.js";
 import { getList, getListTasks, getTaskOrNull } from "./clickup.js";
+import { getBugLists } from "./bugLists.js";
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const CLOSED_STATUS_TYPES = ["closed", "done"];
@@ -15,6 +15,7 @@ function toBug(task) {
     status: task.status.status,
     isOpen: !CLOSED_STATUS_TYPES.includes(task.status.type),
     url: task.url,
+    listId: String(task.list?.id ?? ""),
     updatedAt: Number(task.date_updated)
   };
 }
@@ -35,12 +36,9 @@ async function loadList(listId) {
   return { list, tasks };
 }
 
-async function loadBugs() {
-  if (config.clickupSearchListIds.length === 0) {
-    throw new Error("CLICKUP_SEARCH_LIST_IDS or CLICKUP_BUG_LIST_ID must be set.");
-  }
-
-  const loaded = await Promise.all(config.clickupSearchListIds.map(loadList));
+async function loadBugs(forceRefresh) {
+  const lists = await getBugLists({ forceRefresh });
+  const loaded = await Promise.all(lists.searchListIds.map(loadList));
   const bugs = [];
   const statuses = [];
 
@@ -59,15 +57,17 @@ async function loadBugs() {
 
   return {
     listName,
+    createListName: lists.current.spaceName,
     statuses,
+    tags: lists.tags,
     bugs: bugs.sort((a, b) => b.updatedAt - a.updatedAt),
     loadedAt: Date.now()
   };
 }
 
-function startRefresh() {
+function startRefresh(forceRefresh = false) {
   if (!refreshPromise) {
-    refreshPromise = loadBugs()
+    refreshPromise = loadBugs(forceRefresh)
       .then((data) => {
         cache = data;
         return data;
@@ -82,7 +82,7 @@ function startRefresh() {
 
 export async function getBugData({ forceRefresh = false } = {}) {
   if (!cache || forceRefresh) {
-    return startRefresh();
+    return startRefresh(forceRefresh);
   }
 
   if (Date.now() - cache.loadedAt > CACHE_TTL_MS) {
@@ -128,5 +128,6 @@ export async function getCurrentBug(bugId) {
     return null;
   }
 
-  return { ...toBug(task), stillInList: config.clickupSearchListIds.includes(String(task.list?.id)) };
+  const lists = await getBugLists();
+  return { ...toBug(task), stillInList: lists.searchListIds.includes(String(task.list?.id)) };
 }
