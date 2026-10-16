@@ -1,0 +1,11 @@
+{
+  "uid": "clickup_company_bugs_card",
+  "type": "card",
+  "config": {
+    "name": "ClickUp bugs",
+    "description": "Every ClickUp bug linked to this company's tickets, with its current status.",
+    "location": "crm.record.tab",
+    "entrypoint": "/app/cards/CompanyBugsCard.jsx",
+    "objectTypes": ["companies"]
+  }
+}

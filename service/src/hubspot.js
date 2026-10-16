@@ -40,3 +40,7 @@ export function getTicketProperties(ticketId, propertyNames) {
 export function updateTicketProperties(ticketId, properties) {
   return hubspotRequest("PATCH", `/crm/v3/objects/tickets/${encodeURIComponent(ticketId)}`, { properties });
 }
+
+export function searchTickets(body) {
+  return hubspotRequest("POST", "/crm/v3/objects/tickets/search", body);
+}

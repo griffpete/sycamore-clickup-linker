@@ -8,6 +8,7 @@ import { addReportToBug } from "./bugReport.js";
 import { getTicketContext } from "./ticketContext.js";
 import { searchBugs } from "./bugSearch.js";
 import { getLinkedBug, linkBug, unlinkBug } from "./ticketLink.js";
+import { getCompanyBugs } from "./companyBugs.js";
 
 const DEFAULT_SEARCH_LIMIT = 25;
 const MAX_SEARCH_LIMIT = 100;
@@ -126,6 +127,10 @@ app.put("/api/tickets/:ticketId/linked-bug", async (req, res) => {
 app.delete("/api/tickets/:ticketId/linked-bug", async (req, res) => {
   await unlinkBug(req.params.ticketId);
   res.json({ linkedBug: null });
+});
+
+app.get("/api/companies/:companyId/bugs", async (req, res) => {
+  res.json(await getCompanyBugs(req.params.companyId, req.query.portalId));
 });
 
 app.use((error, req, res, next) => {

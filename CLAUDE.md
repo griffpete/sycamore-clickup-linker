@@ -53,7 +53,7 @@ ngrok: `ngrok http 3000 --url=detached-worsening-happily.ngrok-free.dev`
 - `HUBSPOT_ACCESS_TOKEN` is the static token from the app's Distribution tab, not the Auth tab.
 - `PUBLIC_BASE_URL` must exactly match the URL HubSpot calls or signature checks fail.
 - `hubspot.fetch` only reaches URLs in `permittedUrls.fetch`, never localhost. Changes need `hs project upload`.
-- A card has exactly one `location`. Changing it removes the card from its old place. Two cards share `BugLinkCard.jsx`: `clickup_bug_link_card` at `helpdesk.sidebar` and `clickup_bug_link_record_card` at `crm.record.sidebar`.
+- A card has exactly one `location`. Changing it removes the card from its old place. Two cards share `BugLinkCard.jsx`: `clickup_bug_link_card` at `helpdesk.sidebar` and `clickup_bug_link_record_card` at `crm.record.sidebar`. A third card, `clickup_company_bugs_card` (`CompanyBugsCard.jsx`), sits at `crm.record.tab` on companies.
 - UI extension `Input` and `SearchInput` fire `onChange` on blur. Use `onInput` with `useDebounce` for live search.
 - ClickUp has no text search endpoint, so search runs against the in-memory cache.
 - ClickUp statuses come back lowercase. Status `type` of `closed` or `done` means closed.
@@ -73,3 +73,12 @@ The card opens with a radio choice: no bug needed (default), add this ticket to 
 ## Quarter lists
 
 `src/bugLists.js` finds every ClickUp space whose name starts like `2026 Q4 Bugs` (regex `^\d{4}\s*Q[1-4]\b.*bugs`, case-insensitive), picks the newest quarter, and inside it the list named like "bug" or else the first list. New bugs go there; searches cover every quarter list plus `CLICKUP_SEARCH_LIST_IDS` (the legacy 500-bug list, 162901508). Kimberly switches quarters by creating a new space named e.g. `2027 Q1 Bugs (Suspected)` with the bug template list and the tags she wants; nothing else changes. `CLICKUP_CREATE_LIST_ID` is now an optional override and should be removed from Render so the auto-switch works. Tags are per space, so the 15 tags created on 2026-10-08 in the Q4 space need recreating in each new quarter space (or copy the space).
+
+## Company bugs card (added 2026-10-16, ClickUp 86bckpp1c)
+
+Karla wanted every bug for a school in one place. Bugs still live only in ClickUp, so the company view is built from the company's tickets.
+
+- `GET /api/companies/:companyId/bugs?portalId=` (`src/companyBugs.js`): searches tickets with `associations.company = id` and a `clickup_bug_id`, groups them by bug id (one row per bug, however many tickets point at it), and refreshes name, URL, status and open/closed from ClickUp through `getCurrentBug` (cache first, then the task by id). Completed bugs are included with their status. Open bugs sort first, then by last link date. Needs only the ticket scopes the app already has; the search filter on `associations.company` works without a companies scope.
+- `CompanyBugsCard.jsx`, location `crm.record.tab`, objectTypes `companies`: table of bug (link to ClickUp), status tag, the company's tickets on that bug (links), last linked date; "Show completed" toggle (default on), Refresh button, empty state when the company has no linked bugs.
+- After `hs project upload` and the Render deploy, add the card to the company record's default view (Settings > Objects > Companies > Record customization > Default view > middle column, or the layout editor URL in the Sycamore memory notes).
+- Historical ClickUp bugs rarely carry a school. 31 of 603 have a Freshdesk ticket URL; after the Freshdesk migration those can be backfilled onto the migrated tickets (`freshdesk_ticket_id`) to seed the view. Not done yet.
