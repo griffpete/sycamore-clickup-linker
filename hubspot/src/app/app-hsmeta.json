@@ -11,6 +11,7 @@
         "oauth",
         "crm.objects.tickets.read",
         "crm.objects.tickets.write",
+        "crm.objects.companies.read",
         "crm.schemas.tickets.read",
         "crm.schemas.tickets.write",
         "files.read",
